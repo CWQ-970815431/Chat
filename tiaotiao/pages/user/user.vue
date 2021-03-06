@@ -1,0 +1,188 @@
+<template>
+	<view class="content">
+		<view class="top-bar">
+				<image class="bk-user" src="../../static/user/BK2.jpg" mode=""></image>
+				<navigator :url="'../userhome/userhome?id='+this.id"  hover-class="none" >
+				
+					<image class="user-img" :src="imgurl" mode="" ></image>
+				</navigator>
+				<view class="user-name">
+					
+					{{uid}}
+				</view>
+				
+				<navigator :url="'../userdetials/userdetials?id='+this.id"  hover-class="none" >
+					<image class="btn setting" src="../../static/user/setting.png" mode="" ></image>
+				</navigator>
+		</view>
+		<view class="main-content">
+			<view class="content-list" @tap="tofriend">
+				<image class="btn" src="../../static/user/list/myfriend.png" mode=""></image>
+			
+				<view class="title">
+					我的好友
+				</view>
+			
+				<image class="btn" src="../../static/user/go.png" mode=""></image>
+			</view>
+			<view class="content-list">
+				
+				<image class="btn" src="../../static/user/pet.png" mode=""></image>
+				<navigator class="title" :url="'../pethave/pethave?id='+this.id">	
+				<view >
+					我的宠物
+				</view>
+				
+				</navigator>
+				<image class="btn" src="../../static/user/go.png" mode=""></image>
+			</view>
+			<view class="content-list" @tap="getRequest">
+				<image class="btn" src="../../static/user/list/friend.png" mode=""></image>
+				<view class="title" >
+					邀请我的好友
+				</view>
+				<image class="btn" src="../../static/user/go.png" mode=""></image>
+			</view>
+			<view class="content-list">
+				<image class="btn" src="../../static/user/list/release.png" mode=""></image>
+				<view class="title">
+					我的发布
+				</view>
+				<image class="btn" src="../../static/user/go.png" mode=""></image>
+			</view>
+			<view class="content-list">
+				<image class="btn" src="../../static/user/list/star.png" mode=""></image>
+				<view class="title">
+					我的收藏
+				</view>
+				<image class="btn" src="../../static/user/go.png" mode=""></image>
+			</view>
+			
+			
+			
+			
+			
+		</view>
+		
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				imgurl:'../../static/sinup/logo.jpg',
+				uid:'1',
+				useremail:'1',
+				id:'',
+			};
+		},
+		
+		onShow(){
+					this.getStorage()
+				},
+		methods:{
+			toUserdetials:function(){
+				uni.navigateTo({
+					url:'../userdetials/userdetials?id='+this.id,
+				})
+			},
+			getStorage:function(){
+				const value = uni.getStorageSync('user')
+				if(value){
+						this.imgurl = value.imgurl
+						this.uid = value.name
+						 this.useremail =value.email
+						 this.id = value.id
+				}
+				else{
+					//如果没有数据缓存，跳转到登陆页面
+					uni.redirectTo({
+						url:'../login/login',
+					})
+				}
+				
+					
+			},
+			//跳转到好友
+			tofriend:function(){
+				uni.switchTab({
+					url:'../friend/friend'
+				})
+			},
+			getRequest:function(){
+				uni.navigateTo({
+					url:'../friendrequest/friendrequest'
+				})
+			},
+			
+			
+		}
+	}
+</script>
+
+<style lang="scss">
+	.content{
+		height: 100vh;
+		width: 100vw;
+			background-color:rgba(220,220,220,0.5);
+		
+	}
+	.btn{
+		margin: 23rpx;
+		width: 66rpx;
+		height: 66rpx;
+	}
+	.top-bar{
+			.bk-user{
+				width: 100%;
+				height: 30vh;
+			}
+			.user-img{
+				position: absolute;
+				top:170rpx;
+				left:300rpx;
+				line-height: 150rpx;
+				width: 150rpx;
+				height: 150rpx;
+				border-radius: 50px;
+				display: inline-block;
+			}
+			.setting{
+			
+				position: absolute;
+				top:90rpx;
+				right: 10rpx;
+			}
+			.user-name{
+				position: absolute;
+				top:330rpx;
+				left:310rpx;
+				text-align: center;
+				width: 17%;
+				color: #191970;
+			
+			}
+		
+	
+		}
+	.main-content{
+		background-color:rgba(220,220,220,0.5);
+		width: 100%;
+		height: 70vh;
+		.content-list{
+			background-color:#FFFFFF;	
+			display: flex;
+			height: 110rpx;
+			margin: 10rpx;
+			.title{
+				color:#191970;
+				margin: 35rpx;
+				flex: 1;
+			}
+			
+			
+		}
+	}	
+	
+</style>

@@ -1,0 +1,176 @@
+{
+	"easycom": {
+			"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+		},
+	"pages": [{
+		"path":  "pages/login/login",
+		"style": {
+			"navigationStyle":"custom"
+		}
+	}    ,{
+            "path" : "pages/index/index",
+            "style" :                                                                                    
+            {
+                "navigationStyle":"custom"
+            }
+            
+        }
+        ,{
+            "path" : "pages/signup/signup",
+            "style" :                                                                                    
+            {
+                "navigationStyle":"custom"
+            }
+            
+        }
+        ,{
+            "path" : "pages/user/user",
+            "style" :                                                                                    
+            {
+                 "navigationStyle":"custom"
+            }
+            
+        },
+		{
+		    "path" : "pages/chat/chat",
+		    "style" :                                                                                    
+		    {
+		         "navigationStyle":"custom",
+				  "enablePullDownRefresh": true
+		    }
+		    
+		},
+		{
+		    "path" : "pages/search/search",
+		    "style" :                                                                                    
+		    {
+		         "navigationStyle":"custom"
+		    }
+		    
+		},
+		{
+		    "path" : "pages/userdetials/userdetials",
+		    "style" :                                                                                    
+		    {
+		         "navigationStyle":"custom"
+		    }
+		    
+		},
+		{
+		    "path" : "pages/userhome/userhome",
+		    "style" :                                                                                    
+		    {
+		         "navigationStyle":"custom"
+		    }
+		   
+		},
+		{
+		    "path" : "pages/friendrequest/friendrequest",
+		    "style" :                                                                                    
+		    {
+		         "navigationStyle":"custom"
+		    }
+		   
+		}
+		
+		
+        ,{
+            "path" : "pages/test/test",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/chatroom/chatroom",
+            "style" :                                                                                    
+            {
+             "navigationStyle":"custom"
+            }
+            
+        }
+        ,{
+            "path" : "components/submit/submit",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/petchoose/petchoose",
+            "style" :                                                                                    
+            {
+                            "navigationStyle":"custom"
+            }
+            
+        }
+        ,{
+            "path" : "pages/petvarieties/petvarieties",
+            "style" :                                                                                    
+            {
+                   "navigationStyle":"custom"
+            }
+            
+        }
+        ,{
+            "path" : "pages/pethave/pethave",
+            "style" :                                                                                    
+            {
+              "navigationStyle":"custom"
+            }
+            
+        }
+        ,{
+            "path" : "pages/friend/friend",
+            "style" :                                                                                    
+            {
+               "navigationStyle":"custom"
+            }
+            
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#007AFF",
+		"backgroundColor": "#FFFFFF"
+	},
+	"tabBar":{
+		"color":"#8a8a8a",
+				"selectedColor":"#d4237a",
+				"borderStyle":"black",
+				"backgroundColor":"#ffffff",
+		"list":[
+			{
+				"pagePath":"pages/index/index",
+				"text":"首页",
+				"iconPath":"static/tabbar/home.png",
+		      "selectedIconPath":"static/tabbar/home.png"
+			},
+			{
+				"pagePath":"pages/friend/friend",
+				"text":"通讯录",
+				"iconPath":"static/tabbar/tonxunlu.png",
+			  "selectedIconPath":"static/tabbar/tonxunlu.png"
+			},
+			{
+				"pagePath":"pages/chat/chat",
+				"text":"聊天",
+				"iconPath":"static/tabbar/chat.png",
+			  "selectedIconPath":"static/tabbar/chat.png"
+			},
+			
+			{
+				"pagePath":"pages/user/user",
+				"text":"我的",
+				"iconPath":"static/tabbar/my.png",
+			  "selectedIconPath":"static/tabbar/my.png"
+			}
+		]
+	}
+	
+}

@@ -1,0 +1,119 @@
+//页面撑开头部样式
+.content {
+	padding-top: var(--status-bar-height);
+}
+	
+//头部公用样式
+.top-bar {
+		z-index: 100;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 88rpx;
+		// box-sizing: border-box;
+		padding-top: var(--status-bar-height);
+		
+		.top-bar-left {
+			float: left;
+			padding-left: $uni-spacing-col-base;
+			image {
+				padding-top: 10rpx;
+				width: 68rpx;
+				height: 68rpx;
+				border-radius: 16rpx;
+			}
+			.text{
+				font-size: $uni-font-size-lg;
+				line-height: 88rpx;
+				color: $uni-text-color;
+			}
+			.back-img{
+				margin-top: 17rpx;
+				width:50rpx;
+				height: 50rpx;
+			}
+		}
+
+		.top-bar-center {
+			z-index: -1;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			bottom: 5px;
+			margin:auto;
+			text-align: center;
+
+			.logo {
+				padding-top: 19rpx;
+				width: 88rpx;
+				height: 42rpx;
+			}
+			.title {
+				font-size: 40rpx;
+				color: $uni-text-color;
+				line-height: 88rpx;
+			}
+		}
+
+		.top-bar-right {
+			float: right;
+			padding-right: 14rpx;
+			.pice{
+				width: 88rpx;
+			}
+			.search {
+				width: 88rpx;
+				height: 88rpx;
+				display: inline-block;
+				
+			}
+			.text{
+				font-size: $uni-font-size-lg;
+				line-height: 88rpx;
+				color: $uni-text-color;
+				padding-right: $uni-spacing-col-base;
+			}
+
+			.add {
+				padding-right: 14rpx;
+				width: 88rpx;
+				height: 88rpx;
+				display: inline-block
+			}
+			
+		
+			image {
+				padding: 18rpx 0 0 18rpx;
+				width: 52rpx;
+				height: 52rpx;
+			}
+			.more-img{
+				height: 88rpx;
+				padding-top: 10rpx;
+				padding-right: $uni-spacing-col-base;
+				image{
+					width: 52rpx;
+					height: 12rpx;
+				}
+			}
+		}
+	}
+	
+	//底部公用样式
+	.bottom-bar{
+		position: fixed;
+		bottom: env(safe-area-inset-bottom);
+		width: 90%;
+		height: 90rpx;
+		padding: 0rpx 5%;
+	}
+	.btn1{
+		text-align: center;
+		line-height: 80rpx;
+		font-size: $uni-font-size-lg;
+		// background: $uni-color-primary;
+		color: $uni-text-color;	
+		height: 80rpx;
+		border-radius: $uni-border-radius-sm;
+	}
