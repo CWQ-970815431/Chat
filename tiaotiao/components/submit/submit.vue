@@ -155,9 +155,9 @@
 						console.log(res)
 						const filePath =res.tempFilePaths
 						
-				  //       for(let i = 0 ;i < filePath.length;i++){
-						// 	this.send(filePath[i],1)
-						// }
+				        for(let i = 0 ;i < filePath.length;i++){
+							this.send(filePath[i],1)
+						}
 				    }
 				});
 			}

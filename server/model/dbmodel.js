@@ -16,8 +16,7 @@ var UserSchema = new Schema({
   petName:{type:String,default:'alone'},
   petSex:{type:String,default: "asexual"},
   petBirth:{type:Date},
-  varieties:{type:String},
-  
+  varieties:{type:String},//宠物品种
 });
 
 //好友表

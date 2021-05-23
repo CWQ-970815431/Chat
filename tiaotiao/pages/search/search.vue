@@ -3,7 +3,7 @@
 		<view class="top-bar">
 			<view class="search-div">
 				<image class="search-img" src="../../static/img/serch/search.png" mode=""></image>
-			<input type="search" placeholder="搜索用户名/用户群" class="search" placeholder-style="color:#aaa;font-weight:400;" @input="search"/>
+			<input type="search"  placeholder="搜索用户名/用户群" class="search" placeholder-style="color:#aaa;font-weight:400;" @input="search"/>
 			</view>
 	
 			<view class="top-bar-right">
@@ -25,6 +25,9 @@
 					<view class="right-bt send" v-if="item.tip==1">	发消息</view>
 					<view class="right-bt add" v-if="item.tip==0" @tap="addFriendBtn(item._id)">	加好友</view>
 				</view>
+			</view>
+			<view class="showAll" @tap="search('all')" v-show="userarr.length == 0">
+				显示所有
 			</view>
 		</view>
 		<!-- 添加好友弹出框 -->
@@ -60,8 +63,9 @@
 				widHeight:'',				//页面高度
 			}
 		},
-		onLoad:function(){
+		onLoad:function(e){
 			this.getStorages()
+			this.search(e.serchInput)
 		},
 		onReady:function(){
 			this.getElementStyle()
@@ -90,12 +94,21 @@
 			},
 			//获取关键词 
 			search:myfun.debounce(function(e){
+				console.log(e)
 				this.userarr = [];	//先清空用户数组
-				let searchval = e.detail.value;	//获取搜索框的内容
-				// console.log(searchval)
-				if(searchval.length>0){
-					this.searchUser(searchval);
+				if(e == 'all'){
+					let searchval = 'all'
+					if(searchval.length>0){
+						this.searchUser(searchval);
+					}
+				}else{
+					let searchval = e.detail.value;	//获取搜索框的内容
+					if(searchval.length>0){
+						this.searchUser(searchval);
+					}
 				}
+				// console.log(searchval)
+				
 			},500),
 			//寻找关键词匹配的用户
 			searchUser:function(e){
@@ -310,7 +323,7 @@
 			.list{
 				width: 100%;
 				height: 80rpx;
-				padding: 20rpx 0;
+				padding: 20rpx 0 88rpx 0;
 				// border: 1px solid red;
 				image{
 					float: left;
@@ -416,6 +429,31 @@
 				color:$uni-text-color ;
 				line-height: 44rpx;
 			}
+		}
+	}
+	.showAll{
+		position: absolute;
+		left: 36%;
+		top: 39%;
+		font-weight: bold;
+		animation: 3s infinite;
+		animation-name: bk;
+		width: 200rpx;
+		line-height: 100rpx;
+		height: 100rpx;
+		border-radius: 50rpx;
+		text-align: center;
+		border: 1px solid rgba(	216,191,216,0.2);
+	}
+	@keyframes bk{
+		0%{
+			background: rgba(255,215,0,0.2);
+		}
+		50%{
+			background: rgba(255,215,0,1);
+		}
+		100%{
+			background: rgba(255,215,0,0.2);
 		}
 	}
 </style>

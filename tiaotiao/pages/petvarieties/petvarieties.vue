@@ -5,7 +5,9 @@
 				<image class="back-img" src="../../static/back.png" mode=""></image>
 			</view>
 			<view class="top-bar-center title">添加宠物	</view>
-			
+			<view class="top-bar-right pice" @tap="toNextPage">
+				暂时跳过
+			</view>
 		</view>
 		<view class="main-content" v-if="!varieties" >
 			<view class="pet-list" v-for="(item,index) in pet[type] " @tap="choose(item.name)">
@@ -175,6 +177,11 @@
 					}
 				   })
 			},	
+			toNextPage:function(){
+				uni.switchTab({
+					url:'/pages/index/index'
+				})
+			},
 			Submit:function(){
 				uni.uploadFile({
 				  url: this.serverUrl+'/files/upload',
@@ -298,5 +305,8 @@
 		line-height: 120rpx;
 		color: #FFFFFF;
 		}
-
+	.top-bar-right{
+		margin-top: 20rpx;
+		color: rgba(112,128,144,0.6);
+	}
 </style>

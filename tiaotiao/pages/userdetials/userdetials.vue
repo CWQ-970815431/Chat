@@ -142,6 +142,7 @@
 			</view>
 			<view class="bt2" @tap="outlogin" v-if="id == uid">退出登录</view>
 			<view class="bt2" @tap="deleteFriend" v-if="id != uid">删除好友</view>
+			<view class="bt2 bt3" @tap="deleteMsg" v-if="id != uid">清空聊天记录</view>
 		</view>
 		<view class="modify" :style="{bottom:-+widHeight+'px'}" :animation="animationData">
 			<view class="modify-header">
@@ -683,6 +684,46 @@
 							}
 						})
 					},
+					//删除聊天记录
+					deleteMsg:function(){
+						uni.showModal({
+							title:'提示',
+							content:'确定删除聊天记录吗?',
+							success:(res)=>{
+								if(res.confirm){	//点击确定
+									uni.request({
+										url: this.serverUrl + '/chat/deletMsg',		//删除好友
+										data: {
+											uid:this.uid,
+											fid:this.id,
+											token:this.token,
+										},
+										method: "POST",
+										success: (data) => {
+											let status = data.data.status;
+											if (status == 200) {
+												//删除聊天 跳回首页
+												console.log('聊天记录删除成功')
+											} else if (status == 500) {
+												uni.showToast({
+													title: '服务器出错了！',
+													duration: 2000, //显示时间
+													icon: 'none'
+												})
+											}else if (status == 300) {
+												//token过期
+												uni.navigateTo({
+													url:'../signin/signin?name='+this.myname
+												})
+											}
+										}
+									}) 
+								}else if(res.cancel){
+									
+								}
+							}
+						})
+					}
 				    }
 		    }	
 		
@@ -753,11 +794,17 @@
 				}
 			}
 			.bt2{
-				margin-top: 160rpx;
+				margin-top: 130rpx;
 				text-align: center;
 				font-size: $uni-font-size-lg;
 				color: $uni-color-warning;
 				line-height: 88rpx;
+				
+			}
+			.bt3{
+				margin-top: 50rpx;
+				color: #FF0000;
+				border: 1px solid rgba(128,128,128,0.2);
 			}
 		}
 		// 修改弹框

@@ -6,7 +6,9 @@
 				<image class="back-img" src="../../static/back.png" mode=""></image>
 			</view>
 			<view class="top-bar-center title">添加宠物	</view>
-			
+			<view class="top-bar-right pice" @tap="toNextPage">
+				暂时跳过
+			</view>
 		</view>
 		<view class="choose">
 			<view class="pet-c" v-for="(item,index) in pet" :key="item+index">
@@ -62,6 +64,11 @@
 				        })
 				
 			},
+			toNextPage:function(){
+				uni.switchTab({
+					url:'/pages/index/index'
+				})
+			}
 		}
 	}
 </script>
@@ -101,6 +108,23 @@
 		text-align: center;
 		color: rgba(112,128,144,0.4);
 	}
-	
+	.top-bar-right{
+		margin-top: 20rpx;
+		color: rgba(112,128,144,0.6);
+		animation: 3s infinite;
+		animation-name: chagneColor;
+	}
+	@keyframes chagneColor
+	{
+	0%{
+		color: rgba(112,128,144,1);
+	}
+	50%{
+		color: rgba(112,128,144,0.3);
+	}
+	100%{
+		color: rgba(112,128,144,1);
+	}
+	}
 	
 </style>

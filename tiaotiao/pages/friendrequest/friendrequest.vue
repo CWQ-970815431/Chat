@@ -28,7 +28,9 @@
 					<text >留言：{{item.msg}}</text>
 				</view>
 			</view>
-			
+			<view class="noneRequest" v-if="requesters.length == 0">
+				暂时没有用户添加您为好友
+			</view>
 		</view>
 	</view>
 </template>
@@ -306,5 +308,25 @@
 				color: $uni-text-color;
 				line-height: 40rpx;
 			}
+	}
+	.noneRequest{
+		position: absolute;
+		left:25%;
+		top:50%;
+		font-size: 39rpx;
+		animation: 3s infinite;
+		animation-name: chagneColor;
+	}
+	@keyframes chagneColor
+	{
+	0%{
+		color: rgba(112,128,144,1);
+	}
+	50%{
+		color: rgba(112,128,144,0.39);
+	}
+	100%{
+		color: rgba(112,128,144,1);
+	}
 	}
 </style>

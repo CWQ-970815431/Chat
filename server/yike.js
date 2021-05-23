@@ -5,6 +5,12 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
+//socket.io
+var server = app.listen(8082);
+var io = require("socket.io").listen(server);
+require("./dao/socket")(io);
+
+
 var jwt = require("./dao/jwt"); //引入token
 
 app.get("/", (req, res) => res.send("hello world！"));

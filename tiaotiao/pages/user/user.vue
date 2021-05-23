@@ -25,15 +25,17 @@
 			
 				<image class="btn" src="../../static/user/go.png" mode=""></image>
 			</view>
-			<view class="content-list">
-				
+			<view class="content-list"  @tap="checkPet">	
 				<image class="btn" src="../../static/user/pet.png" mode=""></image>
-				<navigator class="title" :url="'../pethave/pethave?id='+this.id">	
-				<view >
+			<!-- 	<navigator class="title" :url="'../pethave/pethave?id='+this.id">	 -->
+			<view class="title" >
+			
 					我的宠物
-				</view>
+			
+			</view>
 				
-				</navigator>
+				
+				<!-- </navigator> -->
 				<image class="btn" src="../../static/user/go.png" mode=""></image>
 			</view>
 			<view class="content-list" @tap="getRequest">
@@ -115,7 +117,63 @@
 					url:'../friendrequest/friendrequest'
 				})
 			},
-			
+			checkPet:function(){
+				
+					uni.request({
+						url: this.serverUrl + '/user/detial',		//获取用户信息
+						data: {
+							id:this.id,
+							token:this.token,
+						},
+						method: "POST",
+						success: (data) => {
+							console.log("后台返回的数据")
+							if(data.data.result.length == 0){
+								uni.navigateTo({
+									url:'../login/login',
+								})
+							}
+							else{
+								let status = data.data.status;
+								if (status == 200) {
+									//访问后端成功
+									let res = data.data.result[0];
+									if(res.petName == 'alone'){
+										uni.showModal({
+											title:'提示',
+											content:'您未成功填入您的爱宠信息，是否现在添加?',
+											success:(res)=>{
+												if(res.confirm){	//点击确定
+													uni.navigateTo({
+														url:'/pages/petchoose/petchoose'
+													})
+												} 
+												else if(res.cancel){
+													
+												}
+											}
+											})
+											
+										}
+										else{
+											uni.navigateTo({
+												url:'../pethave/pethave?id='+this.id
+											})
+										}
+									
+								} else if (status == 500) {
+									uni.showToast({
+										title: '服务器出错了！',
+										duration: 2000, //显示时间
+										icon: 'none'
+									})
+								}
+							}
+							
+						}
+					})
+				
+			}
 			
 		}
 	}

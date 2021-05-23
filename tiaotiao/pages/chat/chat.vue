@@ -7,12 +7,12 @@
 		</view>
 		<view class="main-search">
 			<image class="logo" src="../../static/main/search.svg" mode=""></image>
-			<input class="main-input" type="text" value="" placeholder="搜索" @tap="toSearch"/>
+			<input class="main-input" type="text" value="" placeholder="搜索" @tap="toSearch(false)"/>
 		</view>
 		<view class="noone" v-if="!friends.length && requestData <1">
 			<image src="../../static/chat/alone.png" mode="aspectFill"></image>
 			<view class="no-title">一个好友也没有</view>
-			<view class="search-bt" @tap="toSearch">搜索好友	</view>
+			<view class="search-bt" @tap="toSearch(true)">添加好友	</view>
 		</view>
 		<view class="main-content" >
 			<view class="refresh" v-if="refresh">
@@ -36,7 +36,7 @@
 				</view>
 			</view>
 			<view class="friends list" >
-			<view class="friend-list" v-for="(item,index) in friends":key="item.id">
+			<view class="friend-list" v-for="(item,index) in friends":key="item.id" v-if="item.msg">
 					<view class="friend-list-l">
 						<text class="tip" v-if="item.tip>0">{{item.tip}}</text>
 						<navigator :url="'../userhome/userhome?id='+item.id"  hover-class="none" >
@@ -80,12 +80,12 @@
 		}
 		},
 		onLoad() {
-		
 			this.getStorages();
+		    this.join(this.uid)
 			this.friendRequest();
-			this.getFriends();
-		        },
-		
+		this.getFriends();
+			this.receiveSocketMsg()
+				},
 		 onPullDownRefresh() {
 			 this.friends=[]
 			 this.getStorages();
@@ -97,7 +97,7 @@
 		    },		
 		methods:{
 			chatroom:function(e){
-				console.log(e)
+				// console.log(e)
 				uni.navigateTo({
 					url:'../chatroom/chatroom?id='+e.id+'&name='+e.name+'&img='+e.imgurl+'&type='+e.type
 				})
@@ -107,10 +107,52 @@
 					url:'../friendrequest/friendrequest'
 				})
 			},
-			toSearch:function(){
-				uni.reLaunch({
-					url:'../search/search',
-				})
+			//socket模块
+			//用户登录
+			join:function(uid){
+				this.socket.emit('login',uid)
+			},
+			receiveSocketMsg:function(){
+				this.socket.on('msg',(msg,fromid,getimg) => {
+					console.log('图片',msg)
+					let nmsg ='';
+					if(msg.types == 0){
+						nmsg = msg.message;
+					}else{
+						nmsg ='【图片】';
+					}
+					let have =false
+					for(let i = 0; i < this.friends.length;i++ ){
+						if(this.friends[i].id == fromid){
+							let e = this.friends[i];
+							e.lastTime = new Date()
+							e.tip++
+							e.msg = nmsg;
+							//删除原来数据项
+							this.friends.splice(i,1);
+							//新数据插入到最顶部
+							this.friends.unshift(e)
+							console.log(this.friends)
+							have = !have
+						}else if(i >= this.friends.length-1 && have == false){
+							this.friends.unshift(e)
+						}
+						
+					}
+				})			
+			},
+			
+			toSearch:function(e){
+				if(e){
+					uni.reLaunch({
+						url:'../search/search?serchInput='+'all',
+					})
+				}else{
+					uni.reLaunch({
+						url:'../search/search',
+					})
+				}
+				
 			},
 			//好友请求
 			friendRequest:function(){
@@ -169,7 +211,7 @@
 					},
 					method: "POST",
 					success: (data) => {
-					
+						console.log('gettff',data)
 						let status = data.data.status;
 						if (status == 200) { 
 							let res = data.data.result; 
@@ -181,12 +223,12 @@
 										res[i].name = res[i].markname
 									}
 								}
-								
+								console.log('this.firidd',this.friends)
 								for(let i = 0;i<res.length;i++){
-									this.getLastMsg(this.friends,i);
-									this.getUnread(this.friends,i);
+									this.getLastMsg(this.friends,i)
+									this.getUnread(this.friends,i);				
 								}
-								console.log(this.friends)
+								// console.log(this.friends)
 							}
 							let a= myfun.Msort(this.friends,'lastTime',0);
 							if( a == this.friends){
@@ -229,7 +271,6 @@
 							if (status == 200) {
 								
 								let res = data.data.result;
-								console.log(res);
 								if(res.types == 0){
 									//最后消息为文字
 								}else if(res.types == 1){
@@ -242,12 +283,12 @@
 									//地图
 									res.message = '[位置]';
 								}
-								let e = arr[i];
+								console.log('fff',this.friends[i])
+								let e = this.friends[i];
+								console.log('eee',e)
+								 e.msg = res.message;	
 								
-								e.msg = res.message;
-								// console.log(e);	
-								arr.splice(i,1,e);
-								
+								this.friends.splice(i,1,e);
 							} else if (status == 500) {
 								
 								uni.showToast({
@@ -260,6 +301,9 @@
 								uni.navigateTo({
 									url:'../signin/signin?name='+this.myname
 								})
+							}
+							else if (status == 404){
+								
 							}
 						}
 					})
@@ -397,12 +441,12 @@
 				color: rgba(39,40,50,0.60);
 		}
 		.search-bt{
-		
 			text-align: center;
-			line-height: 80rpx;
+			line-height: 90rpx;
 			width: 240rpx;
 			height: 96rpx;
-			background: #FFE431;
+			animation: 3s infinite;
+			animation-name: bk;
 			box-shadow: 0 26px 18px -16px rgba(255,228,49,0.40);
 			border-radius: 24px;
 			border-radius: 24px;
@@ -410,6 +454,18 @@
 			font-size: 14px;
 			color: #272832;
 			letter-spacing: -0.48px;
+			margin-top: 30rpx;
+		}
+		@keyframes bk{
+			0%{
+				background: rgba(255,215,0,0.2);
+			}
+			50%{
+				background: rgba(255,215,0,1);
+			}
+			100%{
+				background: rgba(255,215,0,0.2);
+			}
 		}
 		}
 	.refresh{
@@ -462,7 +518,7 @@
 			top:10rpx
 		}
 		.main-input{
-			width: 600rpx;
+			width: 666rpx;
 			height: 70rpx;
 			margin-left: 30rpx;
 			background-color:#ebebec!important;

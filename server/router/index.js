@@ -57,13 +57,13 @@ module.exports = function(app) {
     search.isFriend(req, res);
   });
   //搜索群
-  app.post("/search/group", (req, res) => {
-    search.searchGroup(req, res);
-  });
-  //判断是否在群内
-  app.post("/search/isingroup", (req, res) => {
-    search.isInGorup(req, res);
-  });
+  // app.post("/search/group", (req, res) => {
+  //   search.searchGroup(req, res);
+  // });
+  // //判断是否在群内
+  // app.post("/search/isingroup", (req, res) => {
+  //   search.isInGorup(req, res);
+  // });
 
   // //token测试
   app.post("/signin/test", (req, res) => {
@@ -123,24 +123,32 @@ module.exports = function(app) {
   app.post("/index/updatemsg", (req, res) => {
     index.updataMsg(req, res);
   });
-  //获取群列表
-  app.post("/index/getgroup", (req, res) => {
-    index.getLastGroupMsg(req, res);
-  });
-  //获取群最后一条消息
-  app.post("/index/getlastgroupmsg", (req, res) => {
-    index.getLastGroupMsg(req, res);
-  });
+  // //获取群列表
+  // app.post("/index/getgroup", (req, res) => {
+  //   index.getLastGroupMsg(req, res);
+  // });
+  // //获取群最后一条消息
+  // app.post("/index/getlastgroupmsg", (req, res) => {
+  //   index.getLastGroupMsg(req, res);
+  // });
 
   //聊天页面
-   //获取群最后一条消息
+   //获取私聊消息
    app.post("/chat/msg", (req, res) => {
     chat.msg(req, res);
   });
+  //发送消息
   app.post('/chat/send',(req,res)=>{
     chat.send(req,res)
   })
+  //更新最后聊天时间
+  app.post("/chat/updateLast",(req,res)=>{
+    chat.updateLastMsgTime(req,res)
+  })
 
+  app.post("/chat/deletMsg",(req,res)=>{
+    chat.deletMsg(req,res)
+  })
   //发布页面
   app.post("/Forum/build",(req,res)=>{
     Forum.bulidnews(req,res)

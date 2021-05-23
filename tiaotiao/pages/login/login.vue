@@ -136,7 +136,7 @@
 								//登录成功
 								this.mon = "none"
 								let res = data.data.back;
-								// console.log(res)
+								console.log(res)
 								//本地存储用户信息 数据缓存
 								try{
 									uni.setStorageSync('user',{
@@ -153,7 +153,7 @@
 									//error
 									console.log('数据存储出错');
 								}
-								if(res.petName && res.petName != 'alone'){
+								if(res.varieties ){
 									// 跳转到首页
 										uni.switchTab({
 											url:'/pages/index/index'

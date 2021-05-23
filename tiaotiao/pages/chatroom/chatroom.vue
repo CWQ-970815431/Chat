@@ -5,11 +5,15 @@
 				<image class="back-img" src="../../static/back.png" mode=""></image>
 			</view>
 			<view class="top-bar-center title">	{{fname}}	</view>
-			<view class="top-bar-right pice">
+			<view class="top-bar-right pice" @tap="userDetial">
+				<image src="../../static/index/mannager.png" mode=""></image>
 			</view>
 		</view>
 		<scroll-view class="chat" scroll-y="true" scroll-with-animation="true"  :scroll-into-view="scrollToView">
 			<view class="chat-main" :style="{paddingBottom:inputh+'px'}">
+				<view class="show-more" @tap="showMorePage" v-if="msgsall.length > msgs.length">
+					显示更多
+				</view>
 				<view class="chat-ls" v-for="(item,index) in msgs" :keys="index" :id="'msg'+item.tip">
 					<view class="chat-time" v-if="item.time">{{changeTime(item.time)}}</view>
 					<view class="msg-m msg-left" v-if="item.fromId == fid">
@@ -64,7 +68,10 @@
 				fid:'',
 				fname:'',
 				type:'',
-				fimgurl:''
+				fimgurl:'',
+				msgsall:[],
+				nowpage:0,
+				pagesize:10,
 			};
 		},
 		onLoad(e) {
@@ -75,16 +82,24 @@
 			this.getStorages()
 			this.getMsg()
 			this.updataMsg()
+			this.receiveSocketMsg();
+			this.goBottom()
 		},
 		components:{
 			submit,
 		},
 		methods:{
+			userDetial:function(){
+				uni.navigateTo({
+					url:'../userdetials/userdetials?id='+this.fid,
+				})
+			},
 			//获取缓存
 			getStorages:function(){
 				try {
-					
+		
 				    const value = uni.getStorageSync('user');
+								console.log(value)
 				    if (value) {
 						//数据缓存存在
 				        // console.log(value);
@@ -126,8 +141,6 @@
 								},
 								method: "POST",
 								success: (data) => {
-									console.log('更新未读')
-									console.log(data);
 									let status = data.data.status;
 									if (status == 200) {
 									
@@ -160,11 +173,11 @@
 								},
 								method: "POST",
 								success: (data) => {
-									// console.log('获取聊天消息')
-									console.log(data);
 									let status = data.data.status;
 									if (status == 200) {
 									let msg = data.data.result;
+									let len =this.msgs.length+2;
+										
 										for(var i = 0; i < msg.length;i++){
 											//时间间隔
 											if(i<msg.length-1){
@@ -175,7 +188,7 @@
 												}
 												msg[i].time = t;
 											}
-											
+											msg[i].tip = i
 											//图片发送时改变
 											if(msg[i].type == 1){
 												// msg[i].message =msg[i].message.slice(5)
@@ -189,14 +202,14 @@
 											}
 											//判断发送方
 											
-											this.msgs.unshift(msg[i]);
-											
-											this.$nextTick(function(){
-												
-												this.scrollToView= 'msg'+this.msgs[i-1].tip;
-											})
-											
+											this.msgsall.unshift(msg[i]);
+										
 										}
+										console.log(this.msgsall)
+										this.showPage(this.msgsall.length)
+										this.$nextTick(function(){
+											this.scrollToView= 'msg'+len;
+										})
 										// console.log(this.msgs)
 									} else if (status == 500) {
 										uni.showToast({
@@ -238,16 +251,49 @@
 			            }
 			        })
 		},
+		//显示信息条数
+		showPage:function(len){
+			if(len<11){
+				this.msgs =this.msgsall
+			}else{
+				let show =1
+				let nowALL = [...this.msgsall]
+				console.log('nowallll',nowALL)
+				while(show < this.pagesize+1){
+					this.msgs.unshift(nowALL[len-show]) 
+					show++
+				}
+			}
+			
+			console.log('showwwww',this.msgs)
+		},
+		//显示更多消息条数
+		showMorePage:function(){
+			let lenALL= this.msgsall.length
+			let nowlen = this.msgs.length
+			let lenchange = lenALL-nowlen
+			if(lenchange>10){
+				let show =lenchange
+				let i=0 ;
+				while(i<10){
+					this.msgs.unshift(this.msgsall[lenchange-i])
+					i++
+				}
+			}else{
+				this.msgs = this.msgsall
+
+			}
+			console.log(this.msgs)
+		},
 		//接受数据
 		inputs:function(e){
-			
 			var a ={
 				id:this.uid,
 				imgurl:this.uimgurl,
 				message:e.message,
 				type:e.types,		//内容类型（0文字，1图片，2音频）
 				time:new Date(),	//发送时间
-				tip:0,
+				tip:this.msgs.length,
 			}
 			//短期发送时间隐藏
 				let t = myfun.spacTime(this.oldTime,a.time)
@@ -256,47 +302,178 @@
 					this.oldTime = t
 				}
 				a.time = t;
-			
-			if(e.types == 1){
-				this.imgMsg.push(e.message)
-			}
-			this.msgs.push(a)
+			this.msgs.splice(this.msgs.length,0,a)
 			console.log(this.msgs)
-			this.goBottom()
-			
-			uni.request({
-						url: this.serverUrl + '/chat/send',		
-						data: {
-							uid:this.uid,
-							fid:this.fid,
-							message: e.message, //内容
-							 types:e.types,
-							 time: new Date(), //生成时间
-							 state: 1 ,//接受状态（0已读，1未读）
-							token:this.token,
-						},
-						method: "POST",
-						success: (data) => {
-							console.log(data);
-							let status = data.data.status;
-							if (status == 200) {
-								console.log('发送信息成功');
-							} else if (status == 500) {
-								uni.showToast({
-									title: '发送信息出错了！',
-									duration: 2000, //显示时间
-									icon: 'none'
-								})
-							}else if (status == 300) {
-								//token过期
-								uni.navigateTo({
-									url:'../signin/signin?name='+this.myname
-								})
-							}
+			if(e.types == 1){
+				this.imgMsg.push(e.message);
+				//提交图片
+				
+				let url = myfun.fileName(new Date())
+				const uploadTask = uni.uploadFile({
+				    url:this.serverUrl+'/files/upload',//仅为示例，非真实的接口地址
+				    filePath: e.message,
+				    name: 'file',
+				    formData: {
+						url:url,
+						name:new Date().getTime()+this.uid+Math.ceil(Math.random()*10),
+				    },
+				    success: (uploadFileRes,FormData) => {
+						
+						let path = uploadFileRes.data;
+						let data = {
+							message:path,
+							types:1,
 						}
-					})
+						uni.request({
+									url: this.serverUrl + '/chat/send',		
+									data: {
+										uid:this.uid,
+										fid:this.fid,
+										message: this.serverUrl+'/'+path, //内容
+										 types:e.types,
+										 time: new Date(), //生成时间
+										 state: 1 ,//接受状态（0已读，1未读）
+										token:this.token,
+									},
+									method: "POST",
+									success: (data) => {
+										let status = data.data.status;
+										if (status == 200) {
+											this.updateLastTime()
+											this.sendSocket(data)
+											  this.goBottom()
+											  
+										} else if (status == 500) {
+											uni.showToast({
+												title: '发送信息出错了！',
+												duration: 2000, //显示时间
+												icon: 'none'
+											})
+										}else if (status == 300) {
+											//token过期
+											uni.navigateTo({
+												url:'../signin/signin?name='+this.myname
+											})
+										}
+									}
+								}) 
+			
+				  
+				    }
+				});
+				
+			}
+			
+			//socket提交
+			if(e.types == 0){
+				uni.request({
+							url: this.serverUrl + '/chat/send',		
+							data: {
+								uid:this.uid,
+								fid:this.fid,
+								message:e.message, //内容
+								 types:e.types,
+								 time: new Date(), //生成时间
+								 state: 1 ,//接受状态（0已读，1未读）
+								token:this.token,
+							},
+							method: "POST",
+							success: (data) => {
+								let status = data.data.status;
+								if (status == 200) {
+									this.updateLastTime()
+									//发送给后端
+									this.sendSocket(e)
+									  this.goBottom()
+									  
+								} else if (status == 500) {
+									uni.showToast({
+										title: '发送信息出错了！',
+										duration: 2000, //显示时间
+										icon: 'none'
+									})
+								}else if (status == 300) {
+									//token过期
+									uni.navigateTo({
+										url:'../signin/signin?name='+this.myname
+									})
+								}
+							}
+						}) 
+			
+			}
 			
 			
+			
+			
+		 },
+		 //发送数据
+		 sendSocket:function(e){
+			 this.socket.emit('msg',e,this.uid,this.fid,this.uimgurl);
+		 },
+		 //socket聊天数据
+		 receiveSocketMsg:function(){
+				this.socket.on('msg',(msg,fromid,getimg) => {
+					if(this.fid == fromid){
+						console.log(msg)
+							let len =this.msgs.length
+							let nowtime = new Date();
+							let t = myfun.spacTime(this.oldTime,nowtime)
+								// console.log(t)
+							if(t){
+									this.oldTime = t 
+								}
+								nowtime = t;
+						
+							var a ={
+								fromId:fromid,
+								message:msg.message,
+								type:msg.types,		//内容类型（0文字，1图片，2音频）
+								time:nowtime,	//发送时间
+								tip:this.msgs.length,
+								imgurl:getimg
+							}
+							if(msg.types ==1){
+								a.message=this.serverUrl+'/'+msg.message
+								this.imgMsg.push(a.message);
+							}
+							//短期发送时间隐藏		
+							this.msgs.push(a)
+							console.log('aa',a)
+							
+							this.goBottom()
+					
+					}
+					});	
+			},
+		 //更新最后通话时间
+		 updateLastTime:function(){
+			 
+			 uni.request({
+			 			url:this.serverUrl + '/chat/updateLast',
+			 			data:{
+			 				uid:this.uid,
+			 				fid:this.fid,
+							token:this.token,
+			 			},
+			 			method: "POST",
+			 			success: (data) => {
+			 				let status = data.data.status;
+							if (status == 500) {
+			 					uni.showToast({
+			 						title: '发送信息出错了！',
+			 						duration: 2000, //显示时间
+			 						icon: 'none'
+			 					})
+			 				}else if (status == 300) {
+			 					//token过期
+			 					uni.navigateTo({
+			 						url:'../signin/signin?name='+this.myname
+			 					})
+			 				}
+			 			}
+			 		})
+	
 		 },
 		//输入框高度
 		heights:function(e){
@@ -308,7 +485,9 @@
 			this.scrollToView = '';
 			this.$nextTick(function(){
 				let len = this.msgs.length-1;
-				this.scrollToView= 'msg'+this.msgs[len].tip;
+				if(this.msgs[len].tip){
+				this.scrollToView= 'msg'+this.msgs[len].tip;	
+				}
 			})
 		}
 	},
@@ -319,6 +498,9 @@
 	@import "../../common/css/mycss.scss";
 	page{
 		height: 100%;
+	}
+	.top-bar .top-bar-center{
+		font-size: 25px;
 	}
 	.content{
 		height: 100%;
@@ -397,5 +579,8 @@
 			}
 		}
 		}
-		
+	.show-more{
+		margin: 0 auto;
+		opacity: 0.5;
+	}
 </style>
