@@ -31,8 +31,11 @@
 
 			
 		</view>
-		<view class="Submit" @tap="Submit">
+		<view class="Submit" @tap="Submit" v-if="varieties">
 			继续
+		</view>
+		<view class="choosePet" v-else>
+			请选择您的宠物品种
 		</view>
 		</view>
 </template>
@@ -183,16 +186,17 @@
 				})
 			},
 			Submit:function(){
+				if(this.petname !='' && this.tempFilePath != '../../static/pet/imgh.png'){	
 				uni.uploadFile({
 				  url: this.serverUrl+'/files/upload',
 				  filePath: this.cropFilePath,
 				  name: "file",
 				  fileType: "image",
-				formData: {
-					url:'user',
-					name:this.uid,
-					token:this.token
-				 },
+					formData: {
+						url:'user',
+						name:this.uid,
+						token:this.token
+					 },
 				  success: (uploadFileRes) => {
 				    var backstr =this.serverUrl+'/'+uploadFileRes.data
 						 // .replace('data/user/',"");
@@ -223,7 +227,16 @@
 				uni.switchTab({
 					url:'../index/index'
 				})
-			}		
+			}
+			else{
+				uni.showToast({
+					title:'您有信息尚未填写完成！',
+					icon:'none',
+					duration:1500
+				})
+			}
+			},
+			
 		}
 	}
 </script>
@@ -308,5 +321,30 @@
 	.top-bar-right{
 		margin-top: 20rpx;
 		color: rgba(112,128,144,0.6);
+		animation: 3s infinite;
+		animation-name: chagneColor;
+	}
+	.choosePet{
+		position: absolute;
+		left:31%;
+		top:60%;
+		height: 66rpx;
+		line-height: 66rpx;
+		border-radius: 20rpx;
+		text-align: center;
+		animation: 3s infinite;
+		animation-name: bk;
+		width: 300rpx;
+	}
+	@keyframes bk{
+		0%{
+			background: rgba(255,215,0,0.2);
+		}
+		50%{
+			background: rgba(255,215,0,1);
+		}
+		100%{
+			background: rgba(255,215,0,0.2);
+		}
 	}
 </style>

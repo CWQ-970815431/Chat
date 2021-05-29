@@ -153,4 +153,24 @@ module.exports = function(app) {
   app.post("/Forum/build",(req,res)=>{
     Forum.bulidnews(req,res)
   })
+  //查找发布消息
+  app.post("/Forum/get",(req,res)=>{
+    Forum.getForum(req,res)
+  })
+  //删除发布消息
+  app.post("/Forum/delete",(req,res)=>{
+    Forum.deletForum(req,res)
+  })
+  //收藏发布消息
+  app.post("/Forum/star",(req,res)=>{
+    Forum.collectForum(req,res)
+  })
+  //收藏发布消息
+  app.post("/Forum/isStar",(req,res)=>{
+    Forum.isStar(req,res)
+  })
+  //收藏列表
+  app.post("/Forum/StarList",(req,res)=>{
+    Forum.starList(req,res)
+  })
 };

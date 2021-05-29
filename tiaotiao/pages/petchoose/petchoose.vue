@@ -114,17 +114,6 @@
 		animation: 3s infinite;
 		animation-name: chagneColor;
 	}
-	@keyframes chagneColor
-	{
-	0%{
-		color: rgba(112,128,144,1);
-	}
-	50%{
-		color: rgba(112,128,144,0.3);
-	}
-	100%{
-		color: rgba(112,128,144,1);
-	}
-	}
+
 	
 </style>

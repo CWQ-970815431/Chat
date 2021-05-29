@@ -49,12 +49,16 @@
 		onLoad(e) {
 			this.getStorages();
 			this.getFriends();
+			this.join()
 		},
 		
 		onPageScroll(e) {
 					this.scrollTop = e.scrollTop;
 				},
 		 methods:{
+			 join:function(uid){
+			 	this.socket.emit('login',uid)
+			 },
 			 toSearch:function(){
 			 	uni.reLaunch({
 			 		url:'../search/search?serchInput='+'all',
@@ -113,6 +117,7 @@
 									let fristName = pinyin.getCamelChars(res[i].name).substring(0, 1);
 									res[i].first =  fristName.toUpperCase()
 								}
+								
 								var p = /[A-Z]/i; 
 								var b = p.test(res[i].first);
 								if(!b){
@@ -124,15 +129,14 @@
 							console.log('res',res)
 							if(res){
 								this.friends = res
-								this.indexList = this.indexList.filter(function(x){
-									for(let i =0;i< res.length+1;i++){
-										if(res[1] && x == res[1].first){
-											console.log('???',res[1].first)
+								let map = this.indexList.filter(function(x){
+									for(let i = 0; i<res.length;i++){
+										if(res[i].first == x){
 											return x
 										}
-										return x == res[i].first
 									}
 								})
+								this.indexList = map
 								this.indexList.push('#')
 							}
 							

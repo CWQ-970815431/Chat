@@ -84,13 +84,16 @@
 		    this.join(this.uid)
 			this.friendRequest();
 		this.getFriends();
-			this.receiveSocketMsg()
+			this.receiveSocketMsg();
+			this.receiveFriendRequest()
 				},
 		 onPullDownRefresh() {
 			 this.friends=[]
 			 this.getStorages();
 		        this.friendRequest();
+				this.join(this.uid)
 		        this.getFriends();
+				this.receiveSocketMsg()
 		        setTimeout(function () {
 		            uni.stopPullDownRefresh();
 		        }, 1000);
@@ -140,8 +143,13 @@
 						
 					}
 				})			
+				
 			},
-			
+			receiveFriendRequest:function(){
+				this.socket.on('friendrequest',(fromid) => {
+					this.friendRequest()
+				})
+			},
 			toSearch:function(e){
 				if(e){
 					uni.reLaunch({
@@ -518,7 +526,7 @@
 			top:10rpx
 		}
 		.main-input{
-			width: 666rpx;
+			width: 600rpx;
 			height: 70rpx;
 			margin-left: 30rpx;
 			background-color:#ebebec!important;

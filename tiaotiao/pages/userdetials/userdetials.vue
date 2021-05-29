@@ -168,7 +168,7 @@
 			            format: true,
 						})
 			return { 
-				
+				back:false,
 				user:'',
 				cropFilePath:'../../static/img/one.jpg',
 				array:['男','女','未知'],
@@ -195,6 +195,9 @@
 		},
 		onLoad(e) {
 			this.id = e.id;
+			if(e.back){
+				this.back =e.back
+			}
 			this.getStorages();
 			this.getUser();
 			this.getMarkName();
@@ -297,11 +300,21 @@
 			},
 			//返回登录页面
 			backOne:function(){
-				let pages = getCurrentPages();  // 获取当前页面栈层数     例如16
-				    let backPages = pages.length - 1;  // 当前层数减一获取要跳转的页面的层数   15
-				        uni.navigateBack({
-				             delta: backPages         //跳转十五层  回到第一层页面
-				        })
+				
+				if(!this.back){
+					let pages = getCurrentPages();  // 获取当前页面栈层数     例如16
+					    let backPages = pages.length - 1;  // 当前层数减一获取要跳转的页面的层数   15
+					        uni.navigateBack({
+					             delta: backPages         //跳转十五层  回到第一层页面
+					        })
+						
+				}else{
+					console.log(this.myname)
+					uni.reLaunch({
+						url:'../user/user?name='+this.user.name
+					})
+				}
+				
 				
 			},
 			//获取好友昵称
@@ -470,6 +483,7 @@
 								if(this.type == 'markname'){
 									this.updateFriendName();
 									this.markname = this.data;
+									
 								}else if(this.type ==='email'){
 									//匹配邮箱格式
 									let reg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
@@ -482,8 +496,16 @@
 											icon: 'none'
 										})
 									}
+								}else if(this.type === 'explain'){
+									this.update(this.data,this.type,this.pwd);
 								}
 								else{
+									if(this.type = 'name'){
+
+										const value = uni.getStorageSync('user');
+										value.name =this.data
+										uni.setStorageSync('user',value);
+									}
 									this.update(this.data,this.type,this.pwd);
 								}
 								
@@ -624,6 +646,7 @@
 						   				if (status == 200) {
 						   					//访问后端成功
 						   					console.log('好友昵称修改成功')
+											
 						   					
 						   				} else if (status == 500) {
 						   					uni.showToast({

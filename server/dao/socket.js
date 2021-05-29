@@ -4,7 +4,6 @@ module.exports = function(io){
     var users ={};
     io.on('connection',(socket)=>{
         //用户成功登录
-        console.log('有用户登录');
         socket.on('login',(id)=>{
             // console.log(socket.id+'登录');
             socket.name =id
@@ -13,10 +12,18 @@ module.exports = function(io){
   
         //用户私发消息
         socket.on('msg',(msg,fromid,toid,getimg)=>{
-        //    console.log(msg);
+           console.log(msg);
            //发送给好友
            if(users[toid]){
             socket.to(users[toid]).emit('msg',msg,fromid,getimg);
+           }
+         
+        }) 
+        socket.on('friendrequest',(fromid,toid)=>{
+        //    console.log(msg);
+           //发送给好友
+           if(users[toid]){
+            socket.to(users[toid]).emit('friendrequest',fromid);
            }
          
         }) 

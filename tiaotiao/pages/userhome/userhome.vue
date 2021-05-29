@@ -155,7 +155,7 @@
 			//发送信息
 			chathim:function(){
 				uni.navigateTo({
-					url:'../chatroom/chatroom?id='+this.user._id+'&name='+this.user.name+'&img='+this.user.imgurl+'&type='
+					url:'../chatroom/chatroom?id='+this.user._id+'&name='+this.user.name+'&img='+this.user.imgurl
 				})
 			},
 			//性别判断

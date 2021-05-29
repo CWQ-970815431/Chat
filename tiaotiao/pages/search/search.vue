@@ -227,6 +227,9 @@
 				this.msg = this.myname + '请求添加好友~'
 				this.modify();
 			},
+			sendSocket:function(){
+						 this.socket.emit('friendrequest',this.uid,this.fid,);
+			},
 			//确定添加好友
 			addSubmit:function(){
 				if(this.msg.length>0){
@@ -242,6 +245,7 @@
 						success: (data) => {
 							let status = data.data.status;
 							if (status == 200) {
+								this.sendSocket()
 								uni.showToast({
 									title: '发送成功！',
 									duration: 2000, //显示时间

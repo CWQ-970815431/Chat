@@ -117,3 +117,15 @@
 		height: 80rpx;
 		border-radius: $uni-border-radius-sm;
 	}
+	@keyframes chagneColor
+	{
+	0%{
+		color: rgba(112,128,144,1);
+	}
+	50%{
+		color: rgba(112,128,144,0.3);
+	}
+	100%{
+		color: rgba(112,128,144,1);
+	}
+	}

@@ -99,7 +99,7 @@
 				try {
 		
 				    const value = uni.getStorageSync('user');
-								console.log(value)
+								// console.log(value)
 				    if (value) {
 						//数据缓存存在
 				        // console.log(value);
@@ -205,7 +205,7 @@
 											this.msgsall.unshift(msg[i]);
 										
 										}
-										console.log(this.msgsall)
+										// console.log(this.msgsall)
 										this.showPage(this.msgsall.length)
 										this.$nextTick(function(){
 											this.scrollToView= 'msg'+len;
@@ -258,14 +258,14 @@
 			}else{
 				let show =1
 				let nowALL = [...this.msgsall]
-				console.log('nowallll',nowALL)
+				// console.log('nowallll',nowALL)
 				while(show < this.pagesize+1){
 					this.msgs.unshift(nowALL[len-show]) 
 					show++
 				}
 			}
 			
-			console.log('showwwww',this.msgs)
+			// console.log('showwwww',this.msgs)
 		},
 		//显示更多消息条数
 		showMorePage:function(){
@@ -303,7 +303,7 @@
 				}
 				a.time = t;
 			this.msgs.splice(this.msgs.length,0,a)
-			console.log(this.msgs)
+			// console.log(this.msgs)
 			if(e.types == 1){
 				this.imgMsg.push(e.message);
 				//提交图片
@@ -320,7 +320,7 @@
 				    success: (uploadFileRes,FormData) => {
 						
 						let path = uploadFileRes.data;
-						let data = {
+						let data1 = {
 							message:path,
 							types:1,
 						}
@@ -340,7 +340,7 @@
 										let status = data.data.status;
 										if (status == 200) {
 											this.updateLastTime()
-											this.sendSocket(data)
+											this.sendSocket(data1)
 											  this.goBottom()
 											  
 										} else if (status == 500) {
@@ -415,7 +415,7 @@
 		 receiveSocketMsg:function(){
 				this.socket.on('msg',(msg,fromid,getimg) => {
 					if(this.fid == fromid){
-						console.log(msg)
+						console.log(msg,getimg)
 							let len =this.msgs.length
 							let nowtime = new Date();
 							let t = myfun.spacTime(this.oldTime,nowtime)
@@ -424,7 +424,7 @@
 									this.oldTime = t 
 								}
 								nowtime = t;
-						
+
 							var a ={
 								fromId:fromid,
 								message:msg.message,

@@ -7,11 +7,10 @@
 					<image class="user-img" :src="imgurl" mode="" ></image>
 				</navigator>
 				<view class="user-name">
-					
-					{{uid}}
+					{{uname}}
 				</view>
 				
-				<navigator :url="'../userdetials/userdetials?id='+this.id"  hover-class="none" >
+				<navigator :url="'../userdetials/userdetials?id='+this.id+'&back='+this.back"  hover-class="none" >
 					<image class="btn setting" src="../../static/user/setting.png" mode="" ></image>
 				</navigator>
 		</view>
@@ -45,7 +44,7 @@
 				</view>
 				<image class="btn" src="../../static/user/go.png" mode=""></image>
 			</view>
-			<view class="content-list">
+			<view class="content-list" @tap="toMyforum">
 				<image class="btn" src="../../static/user/list/release.png" mode=""></image>
 				<view class="title">
 					我的发布
@@ -54,7 +53,7 @@
 			</view>
 			<view class="content-list">
 				<image class="btn" src="../../static/user/list/star.png" mode=""></image>
-				<view class="title">
+				<view class="title" @tap="toStarforum">
 					我的收藏
 				</view>
 				<image class="btn" src="../../static/user/go.png" mode=""></image>
@@ -73,27 +72,37 @@
 	export default {
 		data() {
 			return {
+				back:true,
 				imgurl:'../../static/sinup/logo.jpg',
-				uid:'1',
+				uname:'1',
 				useremail:'1',
 				id:'',
 			};
 		},
-		
+		onLoad(e) {
+			if(e){
+				this.uname == e.name
+			}
+		},
 		onShow(){
 					this.getStorage()
 				},
 		methods:{
-			toUserdetials:function(){
+			toMyforum:function(){
 				uni.navigateTo({
-					url:'../userdetials/userdetials?id='+this.id,
+					url:'../myForum/myForum'
+				})
+			},
+			toStarforum:function(){
+				uni.navigateTo({
+					url:'../startForum/startForum'
 				})
 			},
 			getStorage:function(){
 				const value = uni.getStorageSync('user')
 				if(value){
 						this.imgurl = value.imgurl
-						this.uid = value.name
+						this.uname = value.name
 						 this.useremail =value.email
 						 this.id = value.id
 				}

@@ -5,15 +5,13 @@ var bcrypt = require("../dao/bcrypt");
 var dbmodel = require("../model/dbmodel");
 var User = dbmodel.model("User");
 var Friend = dbmodel.model("Friend");
-var Group = dbmodel.model("Group");
-var GroupUser = dbmodel.model("GroupUser");
 var Message = dbmodel.model("Message");
-var GroupMsg = dbmodel.model("GroupMsg");
-var Forum =dbmodel.model("Forum")
+var Forum = dbmodel.model("Forum")
+var ForumStart = dbmodel.model("ForumStart")
 var jwt = require("./jwt");
 
 //新建用户
-exports.buildUser = function(name, mail, pwd, res) {
+exports.buildUser = function (name, mail, pwd, res) {
   //密码加密
   let password = bcrypt.encryption(pwd);
 
@@ -26,7 +24,7 @@ exports.buildUser = function(name, mail, pwd, res) {
 
   let user = new User(data);
 
-  user.save(function(err, result) {
+  user.save(function (err, result) {
     //用户保存
     if (err) {
       res.send({
@@ -42,11 +40,11 @@ exports.buildUser = function(name, mail, pwd, res) {
 };
 
 //匹配用户表元素个数
-exports.countUserValue = function(data, type, res) {
+exports.countUserValue = function (data, type, res) {
   let wherestr = {};
   //wherestr = ['type':data];
   wherestr[type] = data;
-  User.countDocuments(wherestr, function(err, result) {
+  User.countDocuments(wherestr, function (err, result) {
     if (err) {
       res.send({
         status: 500
@@ -61,7 +59,7 @@ exports.countUserValue = function(data, type, res) {
 };
 
 //用户验证
-exports.userMatch = function(data, pwd, res) {
+exports.userMatch = function (data, pwd, res) {
   let wherestr = {
     $or: [
       {
@@ -77,9 +75,9 @@ exports.userMatch = function(data, pwd, res) {
     name: 1,
     imgurl: 1,
     pwd: 1,
-    varieties:1,
-  }; 
-  User.find(wherestr, out, function(err, result) {
+    varieties: 1,
+  };
+  User.find(wherestr, out, function (err, result) {
     if (err) {
       res.send({
         status: 500
@@ -91,10 +89,9 @@ exports.userMatch = function(data, pwd, res) {
           status: 400
         });
       }
-      result.map(function(e) {
+      result.map(function (e) {
         const pwdMatch = bcrypt.verification(pwd, e.pwd); //密码配对
         if (pwdMatch) {
-          console.log(e);
           let token = jwt.generateToken(e._id); //生成token
           let back = {
             //输出项
@@ -103,8 +100,8 @@ exports.userMatch = function(data, pwd, res) {
             imgurl: e.imgurl,
             token: token,
             pwd: e.pwd,
-            varieties:e.varieties,
-            
+            varieties: e.varieties,
+
           };
 
           res.send({
@@ -119,12 +116,12 @@ exports.userMatch = function(data, pwd, res) {
       });
     }
   });
-  
+
 };
 //搜索宠物
 
 //搜索用户
-exports.searchUser = function(data, res) {
+exports.searchUser = function (data, res) {
   let wherestr;
   if (data == "all") {
     wherestr = {}; //查找所有用户
@@ -149,7 +146,7 @@ exports.searchUser = function(data, res) {
     email: 1,
     imgurl: 1
   };
-  User.find(wherestr, out, function(err, result) {
+  User.find(wherestr, out, function (err, result) {
     if (err) {
       res.send({
         status: 500
@@ -163,13 +160,13 @@ exports.searchUser = function(data, res) {
   });
 };
 //用户匹配是否为好友
-exports.isFriend = function(uid, fid, res) {
+exports.isFriend = function (uid, fid, res) {
   let wherestr = {
     userID: uid,
     friendID: fid,
     state: 0
   };
-  Friend.findOne(wherestr, function(err, result) {
+  Friend.findOne(wherestr, function (err, result) {
     if (err) {
       res.send({
         status: 500
@@ -190,72 +187,17 @@ exports.isFriend = function(uid, fid, res) {
   });
 };
 
-//搜索群
-exports.searchGroup = function(data, res) {
-  let wherestr;
-  if ((data = "yike")) {
-    wherestr = {}; //查找所有群
-  } else {
-    wherestr = {
-      name: {
-        $regex: data
-      }
-    }; //输入是群名    模糊搜索
-  }
-  let out = {
-    name: 1,
-    imgurl: 1
-  };
-  Group.find(wherestr, out, function(err, result) {
-    if (err) {
-      res.send({
-        status: 500
-      });
-    } else {
-      res.send({
-        status: 200,
-        result
-      });
-    }
-  });
-};
 
-//判断是否在群内
-exports.isInGroup = function(uid, gid, res) {
-  let wherestr = {
-    userID: uid,
-    groupID: gid
-  };
-  GroupUser.findOne(wherestr, function(err, result) {
-    if (err) {
-      res.send({
-        status: 500
-      });
-    } else {
-      if (result) {
-        //在群内
-        res.send({
-          status: 200
-        });
-      } else {
-        //不在群内
-        res.send({
-          status: 400
-        });
-      }
-    }
-  });
-};
 //用户详情
 //用户详情
-exports.userDetial = function(id, res) {
+exports.userDetial = function (id, res) {
   let wherestr = {
     _id: id
   };
   let out = {
     pwd: 0
   };
-  User.find(wherestr, out, function(err, result) {
+  User.find(wherestr, out, function (err, result) {
     if (err) {
       res.send({
         status: 500
@@ -271,7 +213,7 @@ exports.userDetial = function(id, res) {
 
 //用户信息修改
 function update(data, update, res) {
-  User.findByIdAndUpdate(data, update, function(err, resu) {
+  User.findByIdAndUpdate(data, update, function (err, resu) {
     if (err) {
       //修改失败
       res.send({
@@ -286,7 +228,7 @@ function update(data, update, res) {
   });
 }
 
-exports.userUpdate = function(data, res) {
+exports.userUpdate = function (data, res) {
   let updatestr = {};
   //判断是否有密码项
   if (typeof data.pwd != "undefined") {
@@ -298,13 +240,13 @@ exports.userUpdate = function(data, res) {
       {
         pwd: 1
       },
-      function(err, result) {
+      function (err, result) {
         if (err) {
           res.send({
             status: 500
           });
         } else {
-          result.map(function(e) {
+          result.map(function (e) {
             const pwdMatch = bcrypt.verification(data.pwd, e.pwd); //密码配对
             if (pwdMatch) {
               //密码验证成功
@@ -315,10 +257,10 @@ exports.userUpdate = function(data, res) {
                 updatestr[data.type] = password;
                 update(data.id, updatestr, res);
               }
-               else {
+              else {
                 //邮箱匹配
                 updatestr[data.type] = data.data;
-                User.countDocuments(updatestr, function(err, result) {
+                User.countDocuments(updatestr, function (err, result) {
                   //mongoose的方法
                   if (err) {
                     res.send({
@@ -350,7 +292,7 @@ exports.userUpdate = function(data, res) {
   } else if (data.type == "name") {
     //如果是用户名先进行匹配
     updatestr[data.type] = data.data;
-    User.countDocuments(updatestr, function(err, result) {
+    User.countDocuments(updatestr, function (err, result) {
       if (err) {
         res.send({
           status: 500
@@ -376,7 +318,7 @@ exports.userUpdate = function(data, res) {
 };
 
 //获取好友昵称
-exports.getMarkName = function(data, res) {
+exports.getMarkName = function (data, res) {
   let wherestr = {
     userID: data.uid,
     friendID: data.fid
@@ -384,7 +326,7 @@ exports.getMarkName = function(data, res) {
   let out = {
     markname: 1
   };
-  Friend.findOne(wherestr, out, function(err, result) {
+  Friend.findOne(wherestr, out, function (err, result) {
     if (err) {
       //获取失败
       res.send({
@@ -401,9 +343,9 @@ exports.getMarkName = function(data, res) {
 };
 
 
-        
+
 //好友昵称修改
-exports.updateMarkName = function(data, res) {
+exports.updateMarkName = function (data, res) {
   let wherestr = {
     userID: data.uid,
     friendID: data.fid
@@ -411,7 +353,7 @@ exports.updateMarkName = function(data, res) {
   let updatestr = {
     markname: data.name
   };
-  Friend.updateOne(wherestr, updatestr, function(err, result) {
+  Friend.updateOne(wherestr, updatestr, function (err, result) {
     if (err) {
       //修改失败
       res.send({
@@ -428,7 +370,7 @@ exports.updateMarkName = function(data, res) {
 
 //好友操作
 //添加好友表
-exports.buildFriend = function(uid, fid, state, res) {
+exports.buildFriend = function (uid, fid, state, res) {
   let data = {
     userID: uid,
     friendID: fid,
@@ -439,7 +381,7 @@ exports.buildFriend = function(uid, fid, state, res) {
   // console.log(data)
   let friend = new Friend(data);
 
-  friend.save(function(err, result) {
+  friend.save(function (err, result) {
     if (err) {
       console.log("申请好友表出错");
     } else {
@@ -450,7 +392,7 @@ exports.buildFriend = function(uid, fid, state, res) {
 
 
 //添加一对一消息
-exports.insertMsg = function(uid, fid, msg, type, res) {
+exports.insertMsg = function (uid, fid, msg, type, res) {
   let data = {
     userID: uid,
     friendID: fid,
@@ -462,7 +404,7 @@ exports.insertMsg = function(uid, fid, msg, type, res) {
   // console.log(data)
   let message = new Message(data);
 
-  message.save(function(err, result) {
+  message.save(function (err, result) {
     if (err) {
       res.send({
         status: 500
@@ -476,7 +418,7 @@ exports.insertMsg = function(uid, fid, msg, type, res) {
 };
 
 //好友申请
-exports.applyFriend = function(data, res) {
+exports.applyFriend = function (data, res) {
   //判断是否已经申请过
   let wherestr = {
     userID: data.uid,
@@ -503,7 +445,7 @@ exports.applyFriend = function(data, res) {
 };
 
 //更新好友状态(同意好友)
-exports.updateFriendState = function(data, res) {
+exports.updateFriendState = function (data, res) {
   //修改项
   let wherestr = {
     $or: [
@@ -522,7 +464,7 @@ exports.updateFriendState = function(data, res) {
     {
       state: 0
     },
-    function(err, result) {
+    function (err, result) {
       if (err) {
         res.send({
           status: 500
@@ -537,7 +479,7 @@ exports.updateFriendState = function(data, res) {
 };
 
 //拒绝好友或删除好友
-exports.deleteFriend = function(data, res) {
+exports.deleteFriend = function (data, res) {
   //修改项
   let wherestr = {
     $or: [
@@ -557,7 +499,7 @@ exports.deleteFriend = function(data, res) {
     {
       state: 0
     },
-    function(err, result) {
+    function (err, result) {
       if (err) {
         res.send({
           status: 500
@@ -572,7 +514,7 @@ exports.deleteFriend = function(data, res) {
 };
 
 //按要求获取用户列表
-exports.getUsers = function(data, res) {
+exports.getUsers = function (data, res) {
   let query = Friend.find({});
   //查询条件
   query.where({
@@ -586,29 +528,28 @@ exports.getUsers = function(data, res) {
   query.sort({
     lastTime: -1
   });
- 
+
   //查询结果
   query
     .exec()
-    .then(function(e) {
-      let result = e.map(function(ver) {
+    .then(function (e) {
+      let result = e.map(function (ver) {
         return {
           id: ver.friendID._id, //获取好友id
           name: ver.friendID.name, //获取好友名字
           markname: ver.markname, //获取好友昵称
           imgurl: ver.friendID.imgurl, //获取好友头像
           lastTime: ver.lastTime, //获取最后通讯时间
-          type:0, //判断是群还是私聊
-          state:ver.friendID.state
+          type: 0, //判断是群还是私聊
+          state: ver.friendID.state
         };
       });
-       console.log(result);
       res.send({
         status: 200,
         result
       });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       res.send({
         status: 500
       });
@@ -616,18 +557,30 @@ exports.getUsers = function(data, res) {
 };
 
 //按要求获取一对一消息
-exports.getOneMsg = function(data, res) {
+exports.getOneMsg = function (data, res) {
   let query = Message.findOne({});
   //查询条件
   query.where({
     $or: [
       {
         userID: data.uid,
-        friendID: data.fid
+        friendID: data.fid,
+        deleteString: 'false'
       },
       {
         userID: data.fid,
-        friendID: data.uid
+        friendID: data.uid,
+        deleteString: 'false'
+      },
+      {
+        userID: data.uid,
+        friendID: data.fid,
+        deleteString: data.fid
+      },
+      {
+        userID: data.fid,
+        friendID: data.uid,
+        deleteString: data.fid
       }
     ]
   });
@@ -639,8 +592,8 @@ exports.getOneMsg = function(data, res) {
   // 查询结果
   query
     .exec()
-    .then(function(e) {
-      if(e){
+    .then(function (e) {
+      if (e) {
         let result = {
           message: e.message, //消息内容
           time: e.time, //发送时间
@@ -651,16 +604,16 @@ exports.getOneMsg = function(data, res) {
           result
         });
       }
-      else{
-        let result ={}
+      else {
+        let result = {}
         res.send({
-          status:404,
+          status: 404,
           result
         })
       }
     })
-    .catch(function(err) { 
-      res.send({ 
+    .catch(function (err) {
+      res.send({
         status: 500,
         err
       });
@@ -668,7 +621,7 @@ exports.getOneMsg = function(data, res) {
 };
 
 //汇总一对一消息未读数
-exports.unreadMsg = function(data, res) {
+exports.unreadMsg = function (data, res) {
   // console.log(data);
   //汇总条件
   let wherestr = {
@@ -678,7 +631,7 @@ exports.unreadMsg = function(data, res) {
         friendID: data.uid,
         state: 1
       },
-      
+
     ]
   };
   // console.log(wherestr);
@@ -697,7 +650,7 @@ exports.unreadMsg = function(data, res) {
 };
 
 //一对一消息未读数修改
-exports.updataMsg = function(data, res) {
+exports.updataMsg = function (data, res) {
   //汇总条件
   let wherestr = {
     userID: data.fid,
@@ -709,7 +662,7 @@ exports.updataMsg = function(data, res) {
     userID: data.fid,
     friendID: data.uid,
   };
-  Message.updateMany(wherestr,updatestr,(err, result) => {
+  Message.updateMany(wherestr, updatestr, (err, result) => {
     if (err) {
       res.send({
         status: 500
@@ -724,106 +677,13 @@ exports.updataMsg = function(data, res) {
   });
 };
 
-//按照要求获取群列表
-exports.getGroup = function(data, res) {
-  let query = GroupUser.find({});
-  //查询条件
-  query.where({
-    userID: data.uid //id为用户所在的群
-  });
-  //查找friendID 关联的user对象
-  query.populate("groupID");
-  //排序方式 最后通讯时间倒序排列
-  query.sort({
-    lastTime: -1
-  });
-  //查询结果
-  query
-    .exec()
-    .then(function(e) {
-      let result = e.map(function(ver) {
-        return {
-          id: ver.groupID._id, //获取群id
-          name: ver.groupID.name, //获取群名称
-          markname: ver.name,
-          imgurl: ver.groupID.imgurl, //获取群头像
-          lastTime: ver.lastTime, //获取最后通讯时间
-          tip: ver.tip, //群的未读消息数
-          type:1 //判断是群还是私聊
-        };
-      });
-      res.send({
-        status: 200,
-        result
-      });
-    })
-    .catch(function(err) {
-      res.send({
-        status: 500
-      });
-    });
-};
 
-//按要求获取群消息
-exports.getOneGroupMsg = function(data, res) {
-  let query = GroupMsg.findOne({});
-  //查询条件
-  query.where({
-    groupID: data.gid
-  });
-  query.populate("userID"); //关联用户表
-  //排序方式 最后通讯时间倒序排列
-  query.sort({
-    time: -1
-  });
-  //查询结果
-  query
-    .exec()
-    .then(function(e) {
-      let result = {
-        message: e.message, //消息内容
-        time: e.time, //发送时间
-        types: e.types, //发送类型
-        name: e.userID.name //谁发送的
-      };
-      res.send({
-        status: 200,
-        result
-      });
-    })
-    .catch(function(err) {
-      res.send({
-        status: 500
-      });
-    });
-};
 
-//群消息未读数修改
-exports.updateGroupMsg = function(data, res) {
-  //汇总条件
-  let wherestr = {
-    userID: data.uid,
-    groupID: data.gid
-  };
-  let updatestr = {
-    tip: 0
-  };
-  Message.updateOne(wherestr, (err, result) => {
-    if (err) {
-      res.send({
-        status: 500
-      });
-    } else {
-      res.send({
-        status: 200
-      });
-    }
-  });
-};
+
 
 //消息操作
 //分页获取数据一对一聊天数据
-exports.msg = function(data,res){
+exports.msg = function (data, res) {
   // var skipNum = data.nowPage*data.pageSize;
   //跳过的条数
   let query = Message.find({});
@@ -832,15 +692,27 @@ exports.msg = function(data,res){
     $or: [
       {
         userID: data.uid,
-        friendID: data.fid
+        friendID: data.fid,
+        deleteString: 'false'
       },
       {
         userID: data.fid,
-        friendID: data.uid
+        friendID: data.uid,
+        deleteString: 'false'
+      },
+      {
+        userID: data.uid,
+        friendID: data.fid,
+        deleteString: data.fid
+      },
+      {
+        userID: data.fid,
+        friendID: data.uid,
+        deleteString: data.fid
       }
     ]
   });
-  query.sort({'time':-1})
+  query.sort({ 'time': -1 })
   //查找friendID 关联的user对象
   query.populate("userID");
   //跳过条数
@@ -850,16 +722,16 @@ exports.msg = function(data,res){
   //查询结果
   query
     .exec()
-    .then(function(e) {
-      let result = e.map(function(ver) {
-        return { 
+    .then(function (e) {
+      let result = e.map(function (ver) {
+        return {
           id: ver._id, //获取id
-          message:ver.message,
-          type:ver.types,
-          time:ver.time,
-          fromId:ver.userID._id,
+          message: ver.message,
+          type: ver.types,
+          time: ver.time,
+          fromId: ver.userID._id,
           imgurl: ver.userID.imgurl, //获取头像    
-          state:ver.state
+          state: ver.state
         };
       });
       res.send({
@@ -867,30 +739,28 @@ exports.msg = function(data,res){
         result
       });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       res.send({
         status: 500
       });
     });
 }
 //sendMsg
-exports.sendMsg =function (data,res){
-  let wherestr = {
-    userID: data.uid,
-    friendID: data.fid
-  };
+exports.sendMsg = function (data, res) {
+
   let msgdata = {
     userID: data.uid, //用户ID
     friendID: data.fid, //好友ID
     message: data.message, //内容
     types: data.types, //内容类型（0文字，1图片连接，2音频连接）
     time: data.time, //生成时间
-    state: 1 //接受状态（0已读，1未读）
+    state: 1,//接受状态（0已读，1未读）
+    deleteString: 'false'
   };
-    
-     let message = new Message(msgdata);
 
-      message .save(function(err, result) {
+  let message = new Message(msgdata);
+
+  message.save(function (err, result) {
     //消息保存
     if (err) {
       res.send({
@@ -903,32 +773,32 @@ exports.sendMsg =function (data,res){
       });
     }
   });
-    
- 
+
+
 }
 
-exports.updateLastMsgTime = function(data, res) {
+exports.updateLastMsgTime = function (data, res) {
   //汇总条件
   let wherestr = {
     $or: [
       {
         userID: data.uid,
         friendID: data.fid,
-        state:0,
+        state: 0,
       },
       {
         userID: data.fid,
         friendID: data.uid,
-        state:0,
+        state: 0,
       }
     ]
   };
   Friend.updateMany(
     wherestr,
     {
-      lastTime:new Date()
+      lastTime: new Date()
     },
-    function(err, result) {
+    function (err, result) {
       if (err) {
         res.send({
           status: 500
@@ -943,49 +813,82 @@ exports.updateLastMsgTime = function(data, res) {
 };
 
 //删除聊天记录
-exports.deletMsg = function(data, res) {
-  //修改项
+exports.deletMsg = function (data, res) {
   let wherestr = {
     $or: [
       {
         userID: data.uid,
-        friendID: data.fid
+        friendID: data.fid,
+        deleteString: 'false'
       },
       {
         userID: data.fid,
-        friendID: data.uid
+        friendID: data.uid,
+        deleteString: 'false'
       }
     ]
   };
-  //删除好友表的记录
-  Message.deleteMany(
-    wherestr,
-    function(err, result) {
-      if (err) {
-        res.send({
-          status: 500
-        });
-      } else {
-        res.send({
-          status: 200
-        });
+  let deletstr = {
+    $or: [
+      {
+        userID: data.uid,
+        friendID: data.fid,
+        deleteString: data.fid
+      },
+      {
+        userID: data.fid,
+        friendID: data.uid,
+        deleteString: data.fid
       }
+    ]
+  };
+  let updatestr = {
+    deleteString: data.uid,
+  };
+  Message.updateMany(wherestr, updatestr, (err, result) => {
+    if (err) {
+      res.send({
+        status: 500
+      });
+    } else {
+      Message.deleteMany(
+        deletstr,
+        function (err, result) {
+          if (err) {
+            res.send({
+              status: 500
+            });
+          } else {
+            res.send({
+              status: 200
+            });
+          }
+        }
+      );
     }
-  );
+  });
+  //修改项
+
+  //删除好友表的记录
+
 };
 
-
-exports.buildNew = function(data,res){
+//创建文章
+exports.buildNew = function (data, res) {
   let New = {
     userID: data.uid, //用户名
-    message: data.message, //邮箱
+    message: data.message, //消息
     time: new Date(), //注册时间
-    comment:data.comment
+    image: data.image,
+    title: data.title,
+    uname: data.uname,
+    uimgurl: data.uimgurl,
+    Forumimage: data.Forumimage,
   };
 
   let News = new Forum(New);
 
-  News.save(function(err, result) {
+  News.save(function (err, result) {
     //用户保存
     if (err) {
       res.send({
@@ -999,3 +902,223 @@ exports.buildNew = function(data,res){
     }
   });
 }
+
+//获取文章
+exports.getForum = function (data, res) {
+  let query = Forum.find({});
+  //查询条件
+  if(data.uid){
+    query.where({
+      userID: data.uid,
+    });  
+  }
+  query.populate("userID");
+  //排序方式 最后通讯时间倒序排列
+  query.sort({
+    time: -1
+  });
+  //查询结果
+  query
+    .exec()
+    .then(function (e) {
+      let result = e.map(function (ver) {
+        return {
+          message: ver.message, //内容
+          title: ver.title,//标题
+          time: ver.time,//生成时间
+          comment: ver.comment, //评论
+          uid: ver.userID._id, //获取好友id
+          ForumID: ver.id,
+          name: ver.uname, //获取好友名字
+          uimgurl: ver.uimgurl, //获取好友头像
+          Forumimage: ver.Forumimage
+        };
+      });
+      res.send({
+        status: 200,
+        result
+      });
+    })
+    .catch(function (err) {
+      res.send({
+        status: 500
+      });
+    });
+};
+//删除文章
+exports.deletForum = function (data, res) {
+  let wherestr = {
+    $or: [
+      {
+        _id: data.forumid,
+      }
+    ]
+  };
+  Forum.deleteMany(
+    wherestr,
+    function (err, result) {
+      if (err) {
+        res.send({
+          status: 500
+        });
+      } else {
+        res.send({
+          status: 200
+        });
+      }
+    });
+  //修改项
+
+  //删除好友表的记录
+
+};
+
+//收藏文章
+exports.collectForum = function (data, res) {
+  let need = {
+    _id: data.ForumID,
+    userID: data.userID,
+    state: 1,
+    uname:data.name,
+    uimgurl:data.uimgurl,
+    message: data.message, //内容
+    title:data.title,//标题
+    Forumimage: data.Forumimage, //图片
+    time: data.time ,//生成时间
+  };
+  if (data.state == 1) {
+    let star = new ForumStart(need);
+ 
+    star.save(function (err, result) {
+      //用户保存
+      if (err) {
+        let wherestr = {
+          _id: data.ForumID,
+          userID: data.userID,
+          state: 0,
+        };
+        let updatestr = {
+          state: 1
+        };
+        ForumStart.updateOne(wherestr, updatestr, function (err, result) {
+          if (err) {
+            //修改失败
+            res.send({
+              status: 500
+            });
+          } else {
+            //修改成功
+            res.send({
+              status: 200,
+              statechangeto:1,
+              msg:'收藏',
+            });
+          }
+        });
+      } else {
+        console.log(`收藏成功`);
+        res.send({
+          status: 200,
+          statechangeto:1,
+          msg:'收藏',
+        });
+      }
+    });
+  } else {
+
+  let updatestr = {
+    state: 0
+  };
+
+  ForumStart.updateOne(need, updatestr, function (err, result) {
+    if (err) {
+      //修改失败
+      res.send({
+        status: 500
+      });
+    } else {
+      
+      //修改成功
+      res.send({
+        status: 200, 
+        statechangeto:0,
+        msg:'取消收藏',
+      });
+    }
+  });
+ 
+  }
+
+};
+
+exports.isStar = function (data, res) {
+  let wherestr = {
+    _id: data.ForumID,
+    userID: data.userID,
+    state: 1,
+  };
+  ForumStart.findOne(wherestr, function (err, result) {
+    if (err) {
+      res.send({
+        status: 500
+      });
+    } else {
+      if (result) {
+        console.log(result);
+        res.send({
+          status: 200
+        });
+      } else {
+        console.log(result);
+        res.send({
+          status: 400
+        });
+      }
+    } 
+  });
+};
+
+exports.getstarForum = function (data, res) {
+  let query = ForumStart.find({});
+  //查询条件
+  query.where({
+    userID: data.uid,
+    state: 1
+  });
+
+  //查找friendID 关联的user对象
+  query.populate("userID");
+  //排序方式 最后通讯时间倒序排列
+  query.sort({
+    lastTime: -1
+  });
+
+  //查询结果
+  query
+    .exec()
+    .then(function (e) {
+      let result = e.map(function (ver) {
+        return {
+          message: ver.message, //内容
+          title: ver.title,//标题
+          time: ver.time,//生成时间
+          comment: ver.comment, //评论
+          state:ver.state,
+          uid: ver.userID._id, //获取好友id
+          ForumID: ver.id,
+          uname: ver.uname, //获取好友名字
+          uimgurl: ver.uimgurl, //获取好友头像
+          Forumimage: ver.Forumimage
+        };
+      });
+      res.send({
+        status: 200,
+        result
+      });
+    })
+    .catch(function (err) {
+      res.send({
+        status: 500
+      });
+    });
+};
